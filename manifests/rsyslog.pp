@@ -1,7 +1,7 @@
-# Class: commonservices::rsyslog
+# Class: commonservice::rsyslog
 # Class for configuring rsyslog
 
-class commonservices::rsyslog(
+class commonservice::rsyslog(
   $port         = '514',
   $enable_udp   = 'true',
   $enable_tcp   = 'true',
@@ -23,7 +23,7 @@ class commonservices::rsyslog(
     enable_udp                => $enable_udp,
     enable_relp               => false,
     server_dir                => '/var/log/',
-    content                   => template('commonservices/rsyslog_config.erb'),
+    content                   => template('commonservice/rsyslog_config.erb'),
     custom_config             => undef,
     port                      => $port,
     address                   => '*',
