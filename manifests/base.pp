@@ -6,10 +6,9 @@ class commonservice::base(
   $active_users,
   $local_users,
   $sudo_users,
-  $enable_puppetlabs = true,
   $repositories      = {},
   $proxy_enable      = true,
-{
+){
   ## Add Security message
   file { '/etc/issue':
     ensure        => file,
@@ -23,7 +22,7 @@ class commonservice::base(
   create_resources(commonservice::base::proxy,$proxy)
 
   ## Account Settings
-  create_resources('commonservice::base::accounts::instance',$local_users,{active_users => $active_users})
+  create_resources('commonservice::base::instance',$local_users,{active_users => $active_users})
 
   ## Setup Sudoers
   class { 'sudo':
@@ -31,7 +30,7 @@ class commonservice::base(
     config_file_replace => false,
   }
 
-  create_resources('commonservice::base::accounts::sudo', $sudo_users, {active_users => $active_users})
+  create_resources('commonservice::base::sudo', $sudo_users, {active_users => $active_users})
 
   ## Setup SSH Service
   class { 'ssh::server':
@@ -46,9 +45,6 @@ class commonservice::base(
 
   ## Add jiocloud Repos
   include ::apt
-  if $enable_puppetlabs {
-    include puppet::repo::puppetlabs
-  }
   if ($proxy_enable) {
     file { '/etc/apt/apt.conf.d/90proxy':
       content => "Acquire::Http::Proxy \"${proxy}\";",

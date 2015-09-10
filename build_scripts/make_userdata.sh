@@ -8,6 +8,7 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export layout="${layout}"
+export puppet_modules_source_repo='https://github.com/vpramo/puppet-commonservices'
 release="\$(lsb_release -cs)"
 sudo mkdir -p /etc/facter/facts.d
 if [ -n "${git_protocol}" ]; then
@@ -35,12 +36,7 @@ then
 else
   jiocloud_repo_deb_url=http://jiocloud.rustedhalo.com/ubuntu/jiocloud-apt-\${release}.deb
 fi
-wget -O jiocloud.deb -t 5 -T 30 \${jiocloud_repo_deb_url}
-dpkg -i puppet.deb jiocloud.deb
-if no_proxy= wget -t 2 -T 30 -O internal.deb http://apt.internal.jiocloud.com/internal.deb
-then
-  dpkg -i internal.deb
-fi
+
 n=0
 while [ \$n -le 5 ]
 do
@@ -49,10 +45,6 @@ do
   sleep 5
 done
 
-if [ -n "${python_jiocloud_source_repo}" ]; then
-  apt-get install -y python-pip python-jiocloud python-dev libffi-dev libssl-dev git
-  pip install -e "${python_jiocloud_source_repo}@${python_jiocloud_source_branch}#egg=jiocloud"
-fi
 if [ -n "${puppet_modules_source_repo}" ]; then
   apt-get install -y git
   git clone ${puppet_modules_source_repo} /tmp/rjil
@@ -76,8 +68,8 @@ if [ -n "${puppet_modules_source_repo}" ]; then
   sed  -i "s/  :datadir: \/etc\/puppet\/hiera\/data/  :datadir: \/etc\/puppet\/hiera.overrides\/data/" /tmp/rjil/hiera/hiera.yaml
   cp /tmp/rjil/hiera/hiera.yaml /etc/puppet
   cp -Rvf /tmp/rjil/hiera/data /etc/puppet/hiera.overrides
-  mkdir -p /etc/puppet/modules.overrides/commonservices
-  cp -Rvf /tmp/rjil/* /etc/puppet/modules.overrides/commonservices/
+  mkdir -p /etc/puppet/modules.overrides/commonservice
+  cp -Rvf /tmp/rjil/* /etc/puppet/modules.overrides/commonservice/
   if [ -n "${module_git_cache}" ]
   then
     cd /etc/puppet/modules.overrides
@@ -114,12 +106,9 @@ fi
 while true
 do
   # first install all packages to make the build as fast as possible
-  puppet apply --detailed-exitcodes \`puppet config print default_manifest\` --config_version='echo packages' --tags package
-  ret_code_package=\$?
-  # now perform base config
-  (echo 'File<| title == "/etc/consul" |> { purge => false }'; echo 'include rjil::jiocloud' ) | puppet apply --config_version='echo bootstrap' --detailed-exitcodes --debug
+  puppet apply --detailed-exitcodes \`puppet config print default_manifest\`
   ret_code_jio=\$?
-  if [[ \$ret_code_jio = 1 || \$ret_code_jio = 4 || \$ret_code_jio = 6 || \$ret_code_package = 1 || \$ret_code_package = 4 || \$ret_code_package = 6 ]]
+  if [[ \$ret_code_jio = 1 || \$ret_code_jio = 4 || \$ret_code_jio = 6 ]]
   then
     echo "Puppet failed. Will retry in 5 seconds"
     sleep 5
