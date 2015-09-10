@@ -21,3 +21,7 @@ mod 'puppetlabs/apt',
   :git => "#{base_url}/puppetlabs/puppetlabs-apt",
   :ref => '1.8.0'
 
+mod 'puppetlabs/inifile',
+  :git => "#{base_url}/puppetlabs/puppetlabs-inifile",
+  :ref => 'ab21bd39fde35b53ae00c44c7b1970b42276d29b'
+
