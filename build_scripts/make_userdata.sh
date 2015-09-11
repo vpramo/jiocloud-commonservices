@@ -1,5 +1,5 @@
 #!/bin/bash -xe
-
+export puppet_modules_source_repo='https://github.com/vpramo/puppet-commonservices'
 cat <<EOF >userdata.txt
 #!/bin/bash
 date
@@ -8,7 +8,6 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export layout="${layout}"
-export puppet_modules_source_repo='https://github.com/vpramo/puppet-commonservices'
 release="\$(lsb_release -cs)"
 sudo mkdir -p /etc/facter/facts.d
 if [ -n "${git_protocol}" ]; then
