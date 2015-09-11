@@ -77,10 +77,12 @@ if [ -n "${puppet_modules_source_repo}" ]; then
     time librarian-puppet update --puppetfile=/tmp/commonservice/Puppetfile --path=/etc/puppet/modules.overrides
   else
     time librarian-puppet install --puppetfile=/tmp/commonservice/Puppetfile --path=/etc/puppet/modules.overrides
+    #Adding this till we can package the entire commonservice puppet
+    cp -r /etc/puppet/modules.overrides/inifile /usr/share/puppet/modules/
   fi
   cat <<INISETTING | puppet apply --config_version='echo settings'
-  ini_setting { basemodulepath: path => "/etc/puppet/puppet.conf", section => main, setting => modulepath, value => "/etc/puppet/modules.overrides:/etc/puppet/modules" }
-  ini_setting { default_manifest: path => "/etc/puppet/puppet.conf", section => main, setting => manifest, value => "/etc/puppet/manifests.overrides/site.pp" }
+  ini_setting { modulepath: path => "/etc/puppet/puppet.conf", section => main, setting => modulepath, value => "/etc/puppet/modules.overrides:/etc/puppet/modules" }
+  ini_setting { manifest: path => "/etc/puppet/puppet.conf", section => main, setting => manifest, value => "/etc/puppet/manifests.overrides/site.pp" }
   ini_setting { disable_per_environment_manifest: path => "/etc/puppet/puppet.conf", section => main, setting => disable_per_environment_manifest, value => "true" }
 INISETTING
 else
