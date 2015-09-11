@@ -94,7 +94,7 @@ commonservice::base::repositories:
 ######## Rsyslog config #########
 ###################################
 
-commonservice::base::rsyslog::tmpl_filter: 
+commonservice::rsyslog::tmpl_filter: 
   compute: {
     template: {
       'name': 'DynFile',
