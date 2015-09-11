@@ -39,7 +39,7 @@ fi
 n=0
 while [ \$n -le 5 ]
 do
-  apt-get update && apt-get install -y puppet software-properties-common puppet-jiocloud jiocloud-ssl-certificate && break
+  apt-get update && apt-get install -y puppet software-properties-common && break
   n=\$((\$n+1))
   sleep 5
 done
@@ -79,8 +79,8 @@ if [ -n "${puppet_modules_source_repo}" ]; then
     time librarian-puppet install --puppetfile=/tmp/commonservice/Puppetfile --path=/etc/puppet/modules.overrides
   fi
   cat <<INISETTING | puppet apply --config_version='echo settings'
-  ini_setting { basemodulepath: path => "/etc/puppet/puppet.conf", section => main, setting => basemodulepath, value => "/etc/puppet/modules.overrides:/etc/puppet/modules" }
-  ini_setting { default_manifest: path => "/etc/puppet/puppet.conf", section => main, setting => default_manifest, value => "/etc/puppet/manifests.overrides/site.pp" }
+  ini_setting { basemodulepath: path => "/etc/puppet/puppet.conf", section => main, setting => modulepath, value => "/etc/puppet/modules.overrides:/etc/puppet/modules" }
+  ini_setting { default_manifest: path => "/etc/puppet/puppet.conf", section => main, setting => manifest, value => "/etc/puppet/manifests.overrides/site.pp" }
   ini_setting { disable_per_environment_manifest: path => "/etc/puppet/puppet.conf", section => main, setting => disable_per_environment_manifest, value => "true" }
 INISETTING
 else
@@ -105,7 +105,7 @@ fi
 while true
 do
   # first install all packages to make the build as fast as possible
-  puppet apply --detailed-exitcodes \`puppet config print default_manifest\`
+  puppet apply --detailed-exitcodes \`puppet config print manifest\`
   ret_code_jio=\$?
   if [[ \$ret_code_jio = 1 || \$ret_code_jio = 4 || \$ret_code_jio = 6 ]]
   then
