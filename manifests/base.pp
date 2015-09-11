@@ -7,7 +7,7 @@ class commonservice::base(
   $local_users,
   $sudo_users,
   $repositories      = {},
-  $proxy_enable      = true,
+  $proxy_enable      = false,
 ){
   ## Add Security message
   file { '/etc/issue':
